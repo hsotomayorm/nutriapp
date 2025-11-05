@@ -29,6 +29,3 @@ USER appuser
 
 # Expose the port for local runs (optional)
 EXPOSE 8080
-
-# Start the server. Gunicorn will import app from wsgi:app
-CMD ["gunicorn", "wsgi:app", "-c", "gunicorn.conf.py"]
