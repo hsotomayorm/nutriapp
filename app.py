@@ -7,9 +7,6 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from flask import Flask, request, jsonify, send_file, render_template
-from dotenv import load_dotenv
-
-load_dotenv()  # carga variables del .env si existe
 
 # -------------------------
 # Configuración
