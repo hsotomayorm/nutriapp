@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Paula Food Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-md mx-auto p-4">
+    <header class="flex items-center justify-between mb-3">
+      <h1 class="text-xl font-bold">Paula Food Tracker</h1>
+      <nav class="space-x-3 text-sm">
+        <a class="underline text-blue-600" href="/summary">Resumen</a>
+        <a class="underline text-blue-600" href="/tabla">Tabla</a>
+      </nav>
+    </header>
+
+    <form id="form" class="space-y-3">
+      <input id="image" name="image" type="file" accept="image/*" capture="environment" class="w-full border p-2 rounded" required/>
+      <div class="grid grid-cols-2 gap-2">
+        <select name="tipo" class="border p-2 rounded">
+          <option value="">Tipo</option><option>Desayuno</option><option>Almuerzo</option><option>Snack</option><option>Cena</option>
+        </select>
+        <input name="descripcion" placeholder="Descripción (opcional)" class="border p-2 rounded"/>
+      </div>
+      <button id="btn" class="w-full bg-black text-white py-2 rounded disabled:opacity-50">Analizar</button>
+    </form>
+
+    <div id="preview" class="mt-4 hidden"><img id="imgPrev" class="w-full rounded"/></div>
+    <div id="result" class="mt-4"></div>
+
+    <div class="mt-6"><a href="/export.csv" class="underline text-blue-600">Descargar CSV</a></div>
+  </div>
+
+<script>
+const form = document.getElementById('form');
+const btn = document.getElementById('btn');
+const result = document.getElementById('result');
+const preview = document.getElementById('preview');
+const imgPrev = document.getElementById('imgPrev');
+const input = document.getElementById('image');
+
+input.addEventListener('change', () => {
+  const f = input.files[0];
+  if (f) { imgPrev.src = URL.createObjectURL(f); preview.classList.remove('hidden'); }
+});
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  btn.disabled = true; result.textContent = 'Analizando…';
+  try {
+    const res = await fetch('/analyze', { method: 'POST', body: new FormData(form) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error');
+    const r = data.registro, color = r.color || '🟡', comentario = data.comentario || '';
+    result.innerHTML = `
+      <div class="bg-white rounded-xl p-4 shadow">
+        <div class="text-sm text-gray-500">${r.fecha_iso} · ${r.hora}${r.tipo ? ' · ' + r.tipo : ''}</div>
+        <div class="text-lg font-semibold mt-1">${r.descripcion || 'Comida detectada'}</div>
+        <div class="mt-2">Impacto: <span class="font-medium">${r.impacto}</span> <span class="ml-2">${color}</span></div>
+        ${comentario ? `<div class="text-sm text-gray-600 mt-1">${comentario}</div>` : ''}
+        <div class="mt-2 text-sm">Recomendación: ${r.recomendacion}</div>
+        <div class="mt-2 text-xs text-gray-500">Etiquetas: ${(r.etiquetas||[]).join(', ')}</div>
+      </div>`;
+  } catch (err) {
+    result.innerHTML = `<div class="text-red-600">${err.message}</div>`;
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

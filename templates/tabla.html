@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es"><head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tabla sesión</title><script src="https://cdn.tailwindcss.com"></script>
+</head><body class="bg-gray-50 text-gray-900">
+<div class="max-w-4xl mx-auto p-4">
+  <header class="flex items-center justify-between mb-3">
+    <h1 class="text-xl font-bold">Tabla de registros (sesión)</h1>
+    <nav class="space-x-4 text-sm"><a href="/" class="underline text-blue-600">Cargar</a><a href="/summary" class="underline text-blue-600">Resumen</a></nav>
+  </header>
+  <div class="bg-white rounded shadow overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          {% for h in headers %}<th class="text-left py-2 px-3 whitespace-nowrap">{{ h }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr class="border-b">
+          <td class="py-2 px-3 whitespace-nowrap">{{ r["Día"] }}</td>
+          <td class="py-2 px-3 whitespace-nowrap">{{ r["Fecha"] }}</td>
+          <td class="py-2 px-3 whitespace-nowrap">{{ r["Hora"] }}</td>
+          <td class="py-2 px-3 whitespace-nowrap">{{ r["Tipo de comida"] }}</td>
+          <td class="py-2 px-3">{{ r["Descripción"] }}</td>
+          <td class="py-2 px-3">{{ r["Impacto según exámenes"] }}</td>
+          <td class="py-2 px-3">{{ r["Color"] }}</td>
+        </tr>
+        {% endfor %}
+        {% if rows|length == 0 %}
+        <tr><td class="py-3 px-3 text-gray-500" colspan="7">Sin datos en esta sesión.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+</body></html>
